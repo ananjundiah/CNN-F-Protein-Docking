@@ -45,41 +45,41 @@ def train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
             
         optimizer.zero_grad()
 
-        print('Batch index: ' + str(batch_idx))
-        print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-        print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+        # print('Batch index: ' + str(batch_idx))
+        # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+        # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
         #Get features
-        print('Loading maps...')
+        # print('Loading maps...')
 
         contact_map = sample['contact_map'].to(device)
         score = sample['score'].to(device)
         contact_ref_map = sample['contact_ref_map'].to(device)
         score_ref = sample['score_ref'].to(device)
 
-        print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-        print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+        # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+        # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
         model.reset()
-        print('Concatenating...')
+        # print('Concatenating...')
         maps_all = torch.cat((contact_ref_map, contact_map), 0)
 
-        print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-        print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+        # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+        # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
               
         #Reset the model latent variables
         model.reset()
 
         #Run first pass through network
-        print('First pass...')
+        # print('First pass...')
         logits, orig_feature_all, block1_all, block2_all = model(maps_all, first=True, inter=True)
 
-        print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-        print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+        # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+        # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
         ff_prev = orig_feature_all
 
-        print('Splitting...')
+        # print('Splitting...')
 
         # find the original feature of clean images
         orig_feature, _ = torch.split(orig_feature_all, contact_ref_map.size(0))
@@ -90,10 +90,10 @@ def train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
         orig_feature_cm = orig_feature[:, 0, :, :]
         cm_idx = orig_feature_cm != 0
 
-        print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-        print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+        # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+        # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
-        print('Calculating first pass loss...')
+        # print('Calculating first pass loss...')
 
         #Calculate the prediction loss for first pass
         if not ('no' in clean):
@@ -105,8 +105,8 @@ def train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
             recon_loss = 0
             loss = (F.mse_loss(sig(logits_adv[:,0]), score_ref[:,0]) + F.mse_loss(rel(logits_adv[:,1]), score_ref[:,1])) / (2*(cycles+1))
 
-        print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-        print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+        # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+        # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
         for i_cycle in range(cycles):
 
@@ -117,10 +117,10 @@ def train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
             recon_block1_clean, recon_block1_adv = torch.split(block1_recon, contact_ref_map.size(0))
             recon_block2_clean, recon_block2_adv = torch.split(block2_recon, contact_ref_map.size(0))
 
-            print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-            print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+            # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+            # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
-            print('Calculating recon loss...')
+            # print('Calculating recon loss...')
             #Calculate the reconstruction loss
 
             recon_loss += (F.mse_loss(recon_adv[:,0,:,:][cm_idx], orig_feature_cm[cm_idx]) + F.mse_loss(recon_block1_adv, block1_clean) + F.mse_loss(
@@ -128,27 +128,27 @@ def train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
             loss += (F.mse_loss(recon_adv[:,0,:,:][cm_idx], orig_feature_cm[cm_idx]) + F.mse_loss(recon_block1_adv, block1_clean) + F.mse_loss(
                 recon_block2_adv, block2_clean)) * mse_parameter / (3 * cycles)
 
-            print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-            print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+            # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+            # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
-            print('Update previous')
+            # print('Update previous')
             #Update the previous input
             ff_current = ff_prev + args.res_parameter * (recon - ff_prev)
             ff_current[:,1:,:,:] = ff_prev[:,1:,:,:]
 
-            print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-            print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+            # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+            # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
-            print('Run forward for i cycle ' + str(i_cycle))
+            # print('Run forward for i cycle ' + str(i_cycle))
             #Run forwards pass and split
             logits = model(ff_current, first=False)
             ff_prev = ff_current
             logits_clean, logits_adv = torch.split(logits, contact_ref_map.size(0))
 
-            print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-            print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+            # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+            # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
-            print('Calculating prediction loss...')
+            # print('Calculating prediction loss...')
             #Calculate the prediction loss
             if not ('no' in clean):
                 pred_loss += (clean_parameter * (F.mse_loss(sig(logits_clean[:, 0]), score_ref[:, 0]) + F.mse_loss(rel(logits_clean[:, 1]),score_ref[:, 1])) + (F.mse_loss(sig(logits_adv[:, 0]), score_ref[:, 0]) + F.mse_loss(rel(logits_adv[:, 1]), score_ref[:, 1]))) / (4 * (cycles + 1))
@@ -158,19 +158,19 @@ def train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
                 pred_loss += (F.mse_loss(sig(logits_adv[:, 0]), score_ref[:, 0]) + F.mse_loss(rel(logits_adv[:, 1]), score_ref[:, 1])) / (2 * (cycles + 1))
                 loss += (F.mse_loss(sig(logits_adv[:, 0]), score_ref[:, 0]) + F.mse_loss(rel(logits_adv[:, 1]), score_ref[:, 1])) / (2 * (cycles + 1))
 
-            print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-            print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+            # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+            # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
-        print('Calculating final recon and pred loss...')
+        # print('Calculating final recon and pred loss...')
         #Calculate the final prediction and reconstruction loss
         _, ff_adv = torch.split(ff_prev, contact_ref_map.size(0))
         final_recon_loss = F.mse_loss(ff_adv[:,0,:,:][cm_idx], orig_feature_cm[cm_idx])
         final_pred_loss = F.mse_loss(sig(logits_adv[:, 0]), score_ref[:, 0]) + F.mse_loss(rel(logits_adv[:, 1]), score_ref[:, 1])
 
-        print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-        print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
-
-        print('Gradient step')
+        # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+        # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+        #
+        # print('Gradient step')
         #Gradient step
         loss.backward()
         if (args.grad_clip):
@@ -178,10 +178,10 @@ def train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
         optimizer.step()
         scheduler.step()
 
-        print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-        print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
-
-        print('Add to total losses')
+        # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+        # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+        #
+        # print('Add to total losses')
         #Add to total across batches for epoch
         train_loss += loss.item()
         train_pred_loss += pred_loss.item()
@@ -189,8 +189,8 @@ def train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
         train_final_recon_loss += final_recon_loss.item()
         train_final_pred_loss += final_pred_loss.item()
 
-        print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
-        print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
+        # print('Memory allocated: ' + str(torch.cuda.memory_allocated()))
+        # print('Memory reserved: ' + str(torch.cuda.memory_reserved()))
 
         #Print batch loss for particular interval
         if batch_idx % args.log_interval == 0:
