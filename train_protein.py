@@ -260,7 +260,7 @@ def test(args, model, device, test_loader, cycles, epoch, mse_parameter = 1.0, c
                 loss += rloss
 
                 #Update input features
-                ff_current = ff_prev + arg.res_parameter * (recon - ff_prev)
+                ff_current = ff_prev + args.res_parameter * (recon - ff_prev)
                 ff_current[:, 1:, :, :] = ff_prev[:, 1:, :, :]
 
                 #Run forwards pass and split
