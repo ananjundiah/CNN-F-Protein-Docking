@@ -206,7 +206,7 @@ def train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
 
     return train_loss, train_pred_loss, train_recon_loss, train_final_pred_loss,train_final_recon_loss
 
-def test(args, model, device, test_loader, cycles, epoch, clean_parameter = 1.0):
+def test(args, model, device, test_loader, cycles, epoch, mse_parameter = 1.0, clean_parameter = 1.0):
     model.eval()
     test_loss = 0.0
     test_pred_loss = 0.0
@@ -522,7 +522,7 @@ def main():
         train_loss, train_pred_loss, train_recon_loss, train_final_pred_loss, train_final_recon_loss = train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
           cycles=args.max_cycles, mse_parameter=args.mse_parameter, clean_parameter=args.clean_parameter, clean=args.clean)
         print('Run test epoch ' + str(epoch))
-        test_loss, test_pred_loss, test_recon_loss, test_final_pred_loss, test_final_recon_loss = test(args, model, device, test_loader, cycles=args.max_cycles, epoch=epoch, clean_parameter=args.clean_parameter)
+        test_loss, test_pred_loss, test_recon_loss, test_final_pred_loss, test_final_recon_loss = test(args, model, device, test_loader, cycles=args.max_cycles, epoch=epoch, mse_parameter=args.mse_parameter, clean_parameter=args.clean_parameter)
         
         Tensor_writer.add_scalars('loss', {'train': train_loss}, epoch)
         Tensor_writer.add_scalars('pred loss', {'train': train_pred_loss}, epoch)
