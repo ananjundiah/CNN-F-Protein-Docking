@@ -539,7 +539,7 @@ def main():
         # Save the model with the best accuracy
         if ((test_final_recon_loss + test_final_pred_loss) < best_loss and args.save_model is not None) or (best_loss == 0 and args.save_model is not None):
             best_loss = test_final_recon_loss + test_final_pred_loss
-            print('Best loss = ' + best_loss)
+            print('Best loss = ' + str(best_loss))
             experiment_fn = args.save_model
             torch.save(model.state_dict(),
                        args.model_dir + "/{}-best.pt".format(experiment_fn))
