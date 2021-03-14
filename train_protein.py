@@ -269,7 +269,7 @@ def test(args, model, device, test_loader, cycles, epoch, mse_parameter = 1.0, c
                 ff_prev = ff_current
 
                 #Calculate prediction loss
-                ploss += (clean_parameter * (
+                ploss = (clean_parameter * (
                             F.mse_loss(sig(logits_clean[:, 0]), score_ref[:, 0]) + F.mse_loss(rel(logits_clean[:, 1]),
                                                                                               score_ref[:, 1])) + (
                                           F.mse_loss(sig(logits_adv[:, 0]), score_ref[:, 0]) + F.mse_loss(
