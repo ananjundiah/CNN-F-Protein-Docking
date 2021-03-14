@@ -248,7 +248,7 @@ def test(args, model, device, test_loader, cycles, epoch, clean_parameter = 1.0)
             for i_cycle in range(cycles):
 
                 #Run backwards pass and split
-                recon, block1_recon, block2_recon = model(logits, step='backward', inter_recon=True)
+                recon, block1_recon, block2_recon = model(output, step='backward', inter_recon=True)
                 recon_clean, recon_adv = torch.split(recon, contact_ref_map.size(0))
                 recon_block1_clean, recon_block1_adv = torch.split(block1_recon, contact_ref_map.size(0))
                 recon_block2_clean, recon_block2_adv = torch.split(block2_recon, contact_ref_map.size(0))
