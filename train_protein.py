@@ -290,6 +290,7 @@ def test(args, model, device, test_loader, cycles, epoch, mse_parameter = 1.0, c
             test_final_pred_loss += final_pred_loss.item() * contact_ref_map.size(0)
 
     #Get average loss by dividing by sample number instead of batch number
+    
     test_loss /= len(test_loader.dataset)
     test_pred_loss /= len(test_loader.dataset)
     test_recon_loss /= len(test_loader.dataset)
