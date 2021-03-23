@@ -543,16 +543,6 @@ class ContactMapDataset(Dataset):
         sample = {'contact_map': contact_map, 'score': score, 'contact_ref_map': contact_ref_map, 'score_ref': score_ref, 'id': name}
         return sample
 
-# class ok():
-#     def __init__(self):
-#         self.no_cuda = False
-#         self.path_train = '/central/groups/smayo/avinashsLargeStorage/PDB_NR_AceMD_FullSet/Contact_Maps/Final_Set_600/Train'
-#         self.batch_size = 32
-#         self.seed = 0
-#         self.ind = 0
-#         self.max_cycles = 1
-#         self.res_parameter = 0.1
-# args = ok()
 
 def main():
     parser = argparse.ArgumentParser(description='CNNF training')
@@ -647,51 +637,6 @@ def main():
     num_metrics = 2
     model = CNNF(num_metrics, ind=args.ind, cycles=args.max_cycles, res_param=args.res_parameter).to(device)
 
-
-    # data2 = []
-    # for index, sample in enumerate(train_loader):
-    #     if index < 5:
-    #         data2.append(sample)
-    # train_transform_cifar = transforms.Compose(
-    #   [transforms.RandomHorizontalFlip(),
-    #    transforms.RandomCrop(32, padding=4),
-    #    transforms.ToTensor(),
-    #    transforms.Normalize([0.5] * 3, [0.5] * 3)])
-    #
-    # test_transform_cifar = transforms.Compose(
-    #   [transforms.ToTensor(),
-    #    transforms.Normalize([0.5] * 3, [0.5] * 3)])
-    #
-    # transform_mnist = transforms.Compose(
-    #   [transforms.ToTensor(),
-    #    transforms.Normalize((0.5,), (0.5,))])
-    #
-    # # Load datasets and architecture
-    # if args.dataset == 'fashion':
-    #     train_loader = torch.utils.data.DataLoader(
-    #         datasets.FashionMNIST('data', train=True, download=True,
-    #                        transform=transform_mnist),
-    #         batch_size=args.batch_size, shuffle=True, drop_last=True)
-    #     test_loader = torch.utils.data.DataLoader(
-    #         datasets.FashionMNIST('data', train=False, transform=transform_mnist),
-    #         batch_size=args.test_batch_size, shuffle=True, drop_last=True)
-    #     num_classes = 10
-    #     model = CNNF(num_classes, ind=args.ind, cycles=args.max_cycles, res_param=args.res_parameter).to(device)
-    #
-    # elif args.dataset == 'cifar10':
-    #     train_data = datasets.CIFAR10(
-    #         'data', train=True, transform=train_transform_cifar, download=True)
-    #     test_data = datasets.CIFAR10(
-    #         'data', train=False, transform=test_transform_cifar, download=True)
-    #     train_loader = torch.utils.data.DataLoader(
-    #       train_data, batch_size=args.batch_size,
-    #       shuffle=True, num_workers=4, pin_memory=True)
-    #     test_loader = torch.utils.data.DataLoader(
-    #       test_data, batch_size=args.test_batch_size,
-    #       shuffle=True, num_workers=4, pin_memory=True)
-    #     num_classes = 10
-    #     model = WideResNet(args.layers, 10, args.widen_factor, args.droprate, args.ind, args.max_cycles, args.res_parameter).to(device)
-
     optimizer = torch.optim.SGD(
           model.parameters(),
           args.lr,
@@ -710,10 +655,10 @@ def main():
 
     for epoch in range(args.epochs):
         print('Run train epoch ' + str(epoch))
-        train_loss, train_pred_loss, train_recon_loss, train_final_pred_loss, train_final_recon_loss = train_adv(args, model, device, train_loader, optimizer, scheduler, epoch,
-          cycles=args.max_cycles, mse_parameter=args.mse_parameter, clean_parameter=args.clean_parameter, clean=args.clean)
+        train_loss, train_pred_loss, train_recon_loss, train_final_pred_loss, train_final_recon_loss = train_delta(args, model, device, train_loader, optimizer, scheduler, epoch,
+          cycles=args.max_cycles, mse_parameter=args.mse_parameter)
         print('Run test epoch ' + str(epoch))
-        test_loss, test_pred_loss, test_recon_loss, test_final_pred_loss, test_final_recon_loss = test(args, model, device, test_loader, cycles=args.max_cycles, epoch=epoch, mse_parameter=args.mse_parameter, clean_parameter=args.clean_parameter)
+        test_loss, test_pred_loss, test_recon_loss, test_final_pred_loss, test_final_recon_loss = test_delta(args, model, device, test_loader, cycles=args.max_cycles, epoch=epoch, mse_parameter=args.mse_parameter)
         
         Tensor_writer.add_scalars('loss', {'train': train_loss}, epoch)
         Tensor_writer.add_scalars('pred loss', {'train': train_pred_loss}, epoch)
