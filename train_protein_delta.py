@@ -210,12 +210,11 @@ def train_delta(args, model, device, train_loader, optimizer, scheduler, epoch,
               cycles, mse_parameter=1.0):
     model.train()
 
-    train_loss = 0.0
     train_pred_loss = 0.0
     train_recon_loss = 0.0
     train_final_recon_loss = 0.0
     train_final_pred_loss = 0.0
-
+    cm_sum_list = []
     model.reset()
 
     for batch_idx, sample in enumerate(train_loader):
@@ -241,11 +240,6 @@ def train_delta(args, model, device, train_loader, optimizer, scheduler, epoch,
         #Find the index of non-zero entries
         orig_feature_cm = contact_ref_map[:, 0, :, :]
         cm_idx = orig_feature_cm != 0
-
-        # score_new = score + logits
-        # score_new[:, 0] = torch.clamp(score_new[:, 0], 0, 1)
-        # score_new[:, 1] = torch.clamp(score_new[:, 1], 0)
-        # pred_loss = F.mse_loss(score_new, score_ref)/(cycles + 1)
 
         # Calculate the prediction loss for first pass
 
@@ -290,10 +284,11 @@ def train_delta(args, model, device, train_loader, optimizer, scheduler, epoch,
         scheduler.step()
 
         # Add to total across batches for epoch
-        train_loss += loss.item()
+        cm_sum = (torch.sum(cm_idx).item()) / 100000
+        cm_sum_list.append(cm_sum)
         train_pred_loss += pred_loss.item()
-        train_recon_loss += recon_loss.item()
-        train_final_recon_loss += final_recon_loss.item()
+        train_recon_loss += recon_loss.item() * cm_sum
+        train_final_recon_loss += final_recon_loss.item() * cm_sum
         train_final_pred_loss += final_pred_loss.item()
 
         # Print batch loss for particular interval
@@ -305,11 +300,11 @@ def train_delta(args, model, device, train_loader, optimizer, scheduler, epoch,
                     final_pred_loss.item(), final_recon_loss.item()))
 
     # Get average loss
-    train_loss /= len(train_loader)
     train_pred_loss /= len(train_loader)
-    train_recon_loss /= len(train_loader)
+    train_recon_loss /= sum(cm_sum_list)
     train_final_pred_loss /= len(train_loader)
-    train_final_recon_loss /= len(train_loader)
+    train_final_recon_loss /= sum(cm_sum_list)
+    train_loss = train_pred_loss + train_recon_loss
 
     return train_loss, train_pred_loss, train_recon_loss, train_final_pred_loss, train_final_recon_loss
 
@@ -409,11 +404,11 @@ def test(args, model, device, test_loader, cycles, epoch, mse_parameter = 1.0, c
 
 def test_delta(args, model, device, test_loader, cycles, epoch, mse_parameter = 1.0):
     model.eval()
-    test_loss = 0.0
     test_pred_loss = 0.0
     test_recon_loss = 0.0
     test_final_pred_loss = 0.0
     test_final_recon_loss = 0.0
+    cm_sum_list = []
 
     with torch.no_grad():
         for batch_idx, sample in enumerate(test_loader):
@@ -474,18 +469,19 @@ def test_delta(args, model, device, test_loader, cycles, epoch, mse_parameter = 
             final_pred_loss = F.mse_loss(final_score, score_ref)
 
             #Multiply by size of batch, since there are uneven sizes
-            test_loss += loss.item() * contact_map.size(0)
+            cm_sum = (torch.sum(cm_idx).item())/100000
+            cm_sum_list.append(cm_sum)
             test_pred_loss += pred_loss.item() * contact_map.size(0)
-            test_recon_loss += recon_loss.item() * contact_map.size(0)
-            test_final_recon_loss += final_recon_loss.item() * contact_map.size(0)
+            test_recon_loss += recon_loss.item() * cm_sum
+            test_final_recon_loss += final_recon_loss.item() * cm_sum
             test_final_pred_loss += final_pred_loss.item() * contact_map.size(0)
 
     #Get average loss by dividing by sample number instead of batch number
-    test_loss /= len(test_loader.dataset)
     test_pred_loss /= len(test_loader.dataset)
-    test_recon_loss /= len(test_loader.dataset)
-    test_final_recon_loss /= len(test_loader.dataset)
+    test_recon_loss /= sum(cm_sum_list)
+    test_final_recon_loss /= sum(cm_sum_list)
     test_final_pred_loss /= len(test_loader.dataset)
+    test_loss = test_pred_loss + test_recon_loss
 
     print('\nTest set: Whole test loss: {:.4f}, Prediction loss: {:.4f}, Recon loss: {:.4f}, Final pred loss: {:.4f}, Final recon loss: {:.4f}\n'.format(
         test_loss, test_pred_loss, test_recon_loss, test_final_pred_loss, test_final_recon_loss))
