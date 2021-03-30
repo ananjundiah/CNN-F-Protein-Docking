@@ -264,14 +264,14 @@ def train_delta(args, model, device, train_loader, optimizer, scheduler, epoch,
             ff_prev = ff_current
 
             # Calculate the prediction loss
-            score_delta = score_ref - (score + sum(logits_list))
+            score_delta = score_ref - (score + args.pred_res_parameter * sum(logits_list))
             pred_loss += F.mse_loss(logits, score_delta)/(cycles + 1)
             loss += F.mse_loss(logits, score_delta)/(cycles + 1)
             logits_list.append(logits)
 
         # Calculate the final prediction and reconstruction loss
         final_recon_loss = F.mse_loss(ff_prev[:, 0, :, :][cm_idx], orig_feature_cm[cm_idx])
-        final_score = score + sum(logits_list)
+        final_score = score + args.pred_res_parameter * sum(logits_list)
         final_score[:, 0] = torch.clamp(final_score[:, 0], 0, 1)
         final_score[:, 1] = torch.clamp(final_score[:, 1], 0)
         final_pred_loss = F.mse_loss(final_score, score_ref)
@@ -456,14 +456,14 @@ def test_delta(args, model, device, test_loader, cycles, epoch, mse_parameter = 
                 ff_prev = ff_current
 
                 # Calculate the prediction loss
-                score_delta = score_ref - (score + sum(logits_list))
+                score_delta = score_ref - (score + args.pred_res_parameter * sum(logits_list))
                 pred_loss += F.mse_loss(logits, score_delta) / (cycles + 1)
                 loss += F.mse_loss(logits, score_delta) / (cycles + 1)
                 logits_list.append(logits)
 
             # Calculate the final prediction and reconstruction loss
             final_recon_loss = F.mse_loss(ff_prev[:, 0, :, :][cm_idx], orig_feature_cm[cm_idx])
-            final_score = score + sum(logits_list)
+            final_score = score + args.pred_res_parameter * sum(logits_list)
             final_score[:, 0] = torch.clamp(final_score[:, 0], 0, 1)
             final_score[:, 1] = torch.clamp(final_score[:, 1], 0)
             final_pred_loss = F.mse_loss(final_score, score_ref)
@@ -588,6 +588,8 @@ def main():
                         help='weight of the clean Xentropy loss')
     parser.add_argument('--res-parameter', type=float, default=0.1,
                         help='step size for residuals')
+    parser.add_argument('--pred-res-parameter', type=float, default=1.0,
+                        help='step size for prediction residuals')
     
     # model parameters
     parser.add_argument('--layers', default=40, type=int, help='total number of layers for WRN')
