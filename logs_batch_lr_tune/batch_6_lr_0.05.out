@@ -1,0 +1,63 @@
+Loading training data
+Loading test data
+Run train epoch 0
+Train Epoch: 0 [0/750 (0%)]	Loss: 309.799622	Prediction Loss: 309.765991	Recon Loss: 0.033632	Final Pred Loss: 4.917185	Final Recon Loss: 1116.749268
+Run test epoch 0
+
+Test set: Whole test loss: 0.1825, Prediction loss: 0.1643, Recon loss: 0.0182, Final pred loss: 0.0180, Final recon loss: 604.7681
+
+Best loss = 604.7861415288704
+Run train epoch 1
+Train Epoch: 1 [0/750 (0%)]	Loss: 0.152829	Prediction Loss: 0.133813	Recon Loss: 0.019016	Final Pred Loss: 0.011501	Final Recon Loss: 633.288635
+Run test epoch 1
+
+Test set: Whole test loss: 0.0332, Prediction loss: 0.0150, Recon loss: 0.0181, Final pred loss: 0.0183, Final recon loss: 604.7723
+
+Run train epoch 2
+Train Epoch: 2 [0/750 (0%)]	Loss: 0.034187	Prediction Loss: 0.011941	Recon Loss: 0.022246	Final Pred Loss: 0.019196	Final Recon Loss: 741.549316
+Run test epoch 2
+
+Test set: Whole test loss: 0.0337, Prediction loss: 0.0155, Recon loss: 0.0181, Final pred loss: 0.0176, Final recon loss: 604.7723
+
+Run train epoch 3
+Train Epoch: 3 [0/750 (0%)]	Loss: 0.024298	Prediction Loss: 0.009246	Recon Loss: 0.015053	Final Pred Loss: 0.022563	Final Recon Loss: 501.752045
+Run test epoch 3
+
+Test set: Whole test loss: 0.0345, Prediction loss: 0.0163, Recon loss: 0.0181, Final pred loss: 0.0173, Final recon loss: 604.7723
+
+Run train epoch 4
+Train Epoch: 4 [0/750 (0%)]	Loss: 0.043418	Prediction Loss: 0.026930	Recon Loss: 0.016488	Final Pred Loss: 0.017611	Final Recon Loss: 549.585876
+Run test epoch 4
+
+Test set: Whole test loss: 0.0331, Prediction loss: 0.0150, Recon loss: 0.0181, Final pred loss: 0.0179, Final recon loss: 604.7723
+
+Run train epoch 5
+Train Epoch: 5 [0/750 (0%)]	Loss: 0.023578	Prediction Loss: 0.010673	Recon Loss: 0.012905	Final Pred Loss: 0.022999	Final Recon Loss: 430.172241
+Run test epoch 5
+
+Test set: Whole test loss: 0.0341, Prediction loss: 0.0160, Recon loss: 0.0181, Final pred loss: 0.0174, Final recon loss: 604.7723
+
+Run train epoch 6
+Train Epoch: 6 [0/750 (0%)]	Loss: 0.070798	Prediction Loss: 0.054446	Recon Loss: 0.016352	Final Pred Loss: 0.060809	Final Recon Loss: 545.068665
+Run test epoch 6
+
+Test set: Whole test loss: 0.0332, Prediction loss: 0.0150, Recon loss: 0.0181, Final pred loss: 0.0178, Final recon loss: 604.7723
+
+Run train epoch 7
+Train Epoch: 7 [0/750 (0%)]	Loss: 0.044706	Prediction Loss: 0.005808	Recon Loss: 0.038898	Final Pred Loss: 0.011363	Final Recon Loss: 1296.585938
+Run test epoch 7
+
+Test set: Whole test loss: 0.0331, Prediction loss: 0.0149, Recon loss: 0.0181, Final pred loss: 0.0181, Final recon loss: 604.7723
+
+Run train epoch 8
+Train Epoch: 8 [0/750 (0%)]	Loss: 0.043920	Prediction Loss: 0.027838	Recon Loss: 0.016082	Final Pred Loss: 0.029102	Final Recon Loss: 536.082642
+Run test epoch 8
+
+Test set: Whole test loss: 0.0332, Prediction loss: 0.0151, Recon loss: 0.0181, Final pred loss: 0.0178, Final recon loss: 604.7723
+
+Run train epoch 9
+Train Epoch: 9 [0/750 (0%)]	Loss: 0.034569	Prediction Loss: 0.016644	Recon Loss: 0.017925	Final Pred Loss: 0.019490	Final Recon Loss: 597.507263
+Run test epoch 9
+
+Test set: Whole test loss: 0.0332, Prediction loss: 0.0150, Recon loss: 0.0181, Final pred loss: 0.0179, Final recon loss: 604.7723
+
