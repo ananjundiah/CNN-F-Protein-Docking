@@ -286,10 +286,10 @@ def train_delta(args, model, device, train_loader, optimizer, scheduler, epoch,
         # Add to total across batches for epoch
         cm_sum = (torch.sum(cm_idx).item()) / 100000
         cm_sum_list.append(cm_sum)
-        train_pred_loss += pred_loss.item()
+        train_pred_loss += pred_loss.item() * contact_map.size(0)
         train_recon_loss += recon_loss.item() * cm_sum
         train_final_recon_loss += final_recon_loss.item() * cm_sum
-        train_final_pred_loss += final_pred_loss.item()
+        train_final_pred_loss += final_pred_loss.item() * contact_map.size(0)
 
         # Print batch loss for particular interval
         if batch_idx % args.log_interval == 0:
@@ -300,9 +300,9 @@ def train_delta(args, model, device, train_loader, optimizer, scheduler, epoch,
                     final_pred_loss.item(), final_recon_loss.item()))
 
     # Get average loss
-    train_pred_loss /= len(train_loader)
+    train_pred_loss /= len(train_loader.dataset)
     train_recon_loss /= sum(cm_sum_list)
-    train_final_pred_loss /= len(train_loader)
+    train_final_pred_loss /= len(train_loader.dataset)
     train_final_recon_loss /= sum(cm_sum_list)
     train_loss = train_pred_loss + train_recon_loss
 
@@ -624,7 +624,7 @@ def main():
     train_data = ContactMapDataset(path = args.path_train, score_idx=[1,2])
     train_loader = torch.utils.data.DataLoader(
       train_data, batch_size=args.batch_size,
-      shuffle=True, pin_memory=False, drop_last = True , num_workers=4)
+      shuffle=True, pin_memory=False, drop_last = False , num_workers=4)
     print('Loading test data')
     test_data = ContactMapDataset(path=args.path_test, score_idx=[1, 2])
     test_loader = torch.utils.data.DataLoader(
