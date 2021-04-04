@@ -57,18 +57,21 @@ class CNNF(nn.Module):
             if (self.ind == 0) or (first == True):
                 if (self.ind == 0) and (first == True):
                     orig_feature = out
-                out = self.ins1_bias(self.ins1(self.conv1(out)))
+                # out = self.ins1_bias(self.ins1(self.conv1(out)))
+                out = self.ins1_bias(self.conv1(out))
                 out = self.relu1(out)
             if (self.ind <= 1) or (first == True):    
                 if (self.ind == 1) and (first == True):
                     orig_feature = out
-                out = self.ins2_bias(self.ins2(self.conv2(out)))
+                # out = self.ins2_bias(self.ins2(self.conv2(out)))
+                out = self.ins2_bias(self.conv2(out))
                 out = self.relu2(out)
                 block1 = out
                 out = self.maxpool2(out)
             if (self.ind == 2) and (first == True):
                 orig_feature = out
-            out = self.ins3_bias(self.ins3(self.conv3(out)))
+            # out = self.ins3_bias(self.ins3(self.conv3(out)))
+            out = self.ins3_bias(self.conv3(out))
             out = self.relu3(out)
             block2 = out
             out = self.maxpool3(out)
@@ -95,19 +98,19 @@ class CNNF(nn.Module):
             # out = self.relu4(out, step='backward')
             # block2_recon = out
             # out = self.conv4(out, step='backward')
-            out = self.ins3(out)
+            # out = self.ins3(out)
             out = self.maxpool3(out, step='backward')
             out = self.relu3(out, step='backward')
             block2_recon = out
             out = self.conv3(out, step='backward')  
             if(self.ind <= 1):
-                out = self.ins2(out)
+                # out = self.ins2(out)
                 out = self.maxpool2(out, step='backward')
                 out = self.relu2(out, step='backward')
                 block1_recon = out
                 out = self.conv2(out, step='backward')
             if (self.ind == 0):
-                out = self.ins1(out) 
+                # out = self.ins1(out)
                 out = self.relu1(out, step='backward')
                 out = self.conv1(out, step='backward')
             
