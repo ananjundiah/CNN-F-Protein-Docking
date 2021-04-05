@@ -306,7 +306,7 @@ def train_delta(args, model, device, train_loader, optimizer, scheduler, epoch,
     train_final_recon_loss /= sum(cm_sum_list)
     train_loss = train_pred_loss + train_recon_loss
 
-    print('\nTrain set: Whole test loss: {:.4f}, Prediction loss: {:.4f}, Recon loss: {:.4f}, Final pred loss: {:.4f}, Final recon loss: {:.4f}\n'.format(
+    print('\nTrain set: Whole train loss: {:.4f}, Prediction loss: {:.4f}, Recon loss: {:.4f}, Final pred loss: {:.4f}, Final recon loss: {:.4f}\n'.format(
         train_loss, train_pred_loss, train_recon_loss, train_final_pred_loss, train_final_recon_loss))
 
     return train_loss, train_pred_loss, train_recon_loss, train_final_pred_loss, train_final_recon_loss
