@@ -190,7 +190,7 @@ class CNNF_larger(nn.Module):
     """ CNNF on an architecture with 2 Convs and 2 FCs. """
 
     def __init__(self, num_metrics, ind=0, cycles=2, res_param=0.1):
-        super(CNNF, self).__init__()
+        super(CNNF_larger, self).__init__()
 
         self.ind = ind
         self.res_param = res_param
