@@ -18,7 +18,7 @@ from shutil import copyfile
 from datetime import datetime
 from tensorboardX import SummaryWriter
 from cnnf.model_cifar import WideResNet
-from cnnf.model_protein_contact import CNNF
+from cnnf.model_protein_contact import CNNF, CNNF_larger
 
 from utils import *
 from advertorch.attacks import GradientSignAttack, LinfPGDAttack
@@ -636,7 +636,8 @@ def main():
 
     #Create network
     num_metrics = 2
-    model = CNNF(num_metrics, ind=args.ind, cycles=args.max_cycles, res_param=args.res_parameter).to(device)
+    model = CNNF_larger(num_metrics, ind=args.ind, cycles=args.max_cycles, res_param=args.res_parameter).to(device)
+    # model = CNNF(num_metrics, ind=args.ind, cycles=args.max_cycles, res_param=args.res_parameter).to(device)
 
     optimizer = torch.optim.SGD(
           model.parameters(),
