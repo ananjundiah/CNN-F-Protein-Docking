@@ -229,30 +229,37 @@ class CNNF_larger(nn.Module):
             if (self.ind == 0) or (first == True):
                 if (self.ind == 0) and (first == True):
                     orig_feature = out
-                out = self.ins1_bias(self.conv1(out))
+                # out = self.ins1_bias(self.conv1(out))
+                out = self.conv1(out)
                 out = self.relu1(out)
             if (self.ind <= 1) or (first == True):
                 if (self.ind == 1) and (first == True):
                     orig_feature = out
-                out = self.ins2_bias(self.conv2(out))
+                # out = self.ins2_bias(self.conv2(out))
+                out = self.conv2(out)
                 out = self.relu2(out)
             if (self.ind == 2) and (first == True):
                 orig_feature = out
-            out = self.ins3_bias(self.conv3(out))
+            # out = self.ins3_bias(self.conv3(out))
+            out = self.conv3(out)
             out = self.relu3(out)
             block1 = out
             out = self.maxpool3(out)
-            out = self.ins4_bias(self.conv4(out))
+            # out = self.ins4_bias(self.conv4(out))
+            out = self.conv4(out)
             out = self.relu4(out)
             block2 = out
             out = self.maxpool4(out)
 
             out = self.flatten(out)
-            out = self.fc1_bias(self.fc1(out))
+            # out = self.fc1_bias(self.fc1(out))
+            out = self.fc1(out)
             out = self.relu5(out)
-            out = self.fc2_bias(self.fc2(out))
+            # out = self.fc2_bias(self.fc2(out))
+            out = self.fc2(out)
             out = self.relu6(out)
-            out = self.fc3_bias(self.fc3(out))
+            # out = self.fc3_bias(self.fc3(out))
+            out = self.fc3(out)
         elif ('backward' in step):
             out = self.fc3(out, step='backward')
             out = self.relu6(out, step='backward')
